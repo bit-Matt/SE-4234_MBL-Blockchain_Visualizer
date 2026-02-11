@@ -1,26 +1,67 @@
 @import "tailwindcss";
 
+/* Design system: Dark Mode (default) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-violet: #9d50ff;
+  --success-green: #00e676;
+  --error-red: #ff5252;
+  --success-bg: rgba(0, 230, 118, 0.15);
+  --error-bg: rgba(255, 82, 82, 0.15);
+  --bg-color: #0f0f12;
+  --card-bg: #1c1b22;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --border-ui: rgba(255, 255, 255, 0.1);
+}
+
+/* Design system: Light Mode */
+[data-theme="light"] {
+  --primary-violet: #6200ee;
+  --success-green: #2e7d32;
+  --error-red: #d32f2f;
+  --success-bg: rgba(46, 125, 50, 0.12);
+  --error-bg: rgba(211, 47, 47, 0.12);
+  --bg-color: #f8f9ff;
+  --card-bg: #ffffff;
+  --text-primary: #1c1b22;
+  --text-secondary: #666666;
+  --border-ui: rgba(0, 0, 0, 0.1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--bg-color);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Pulsing violet border for block card during mining */
+@keyframes pulse-violet-border {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--primary-violet);
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--primary-violet), 0 0 12px var(--primary-violet);
+  }
+}
+
+.block-card-mining {
+  animation: pulse-violet-border 1.2s ease-in-out infinite;
+}
+
+/* Glow for previous hash when hovering linked hash in previous block */
+.hash-link-glow {
+  transition: box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.hash-link-glow.highlight {
+  color: var(--primary-violet);
+  text-shadow: 0 0 8px var(--primary-violet);
 }

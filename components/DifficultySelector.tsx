@@ -17,7 +17,8 @@ export function DifficultySelector({
     <div className="flex items-center gap-2">
       <label
         htmlFor="difficulty-select"
-        className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+        className="text-sm font-medium"
+        style={{ color: "var(--text-secondary)" }}
       >
         Difficulty
       </label>
@@ -26,7 +27,12 @@ export function DifficultySelector({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         disabled={disabled}
-        className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+        className="rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-violet)] focus:border-[var(--primary-violet)] disabled:opacity-50"
+        style={{
+          backgroundColor: "var(--card-bg)",
+          color: "var(--text-primary)",
+          borderColor: "var(--border-ui)",
+        }}
       >
         {OPTIONS.map((d) => (
           <option key={d} value={d}>

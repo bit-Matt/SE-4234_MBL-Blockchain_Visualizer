@@ -1,15 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Block, type BlockData } from "@/lib/blockchain";
-import { isChainValidFromBlocks } from "@/lib/blockchain";
+import { Block, type BlockData, isChainValidFromBlocks, isBlockHashValid } from "@/lib/blockchain";
 import { BlockCard } from "@/components/BlockCard";
 import { ValidationIndicator } from "@/components/ValidationIndicator";
 import { DifficultySelector } from "@/components/DifficultySelector";
 import { MiningForm } from "@/components/MiningForm";
+import { ThemeToggle } from "@/components/ThemeToggle";
+
+/** Fixed timestamp for genesis so server and client render the same hash (avoids hydration mismatch). */
+const GENESIS_TIMESTAMP = 0;
 
 function getInitialBlocks(): BlockData[] {
-  const genesis = new Block(0, Date.now(), "Genesis Block", "0");
+  const genesis = new Block(0, GENESIS_TIMESTAMP, "Genesis Block", "0");
   return [genesis.toJSON()];
 }
 
@@ -20,6 +23,9 @@ export function BlockchainVisualizer() {
     "idle" | "mining" | "mined"
   >("idle");
   const [miningTimeMs, setMiningTimeMs] = useState(0);
+  const [hoveredHashBlockIndex, setHoveredHashBlockIndex] = useState<
+    number | null
+  >(null);
 
   const isValid = useMemo(() => isChainValidFromBlocks(blocks), [blocks]);
 
@@ -28,7 +34,6 @@ export function BlockchainVisualizer() {
       setMiningStatus("mining");
       setMiningTimeMs(0);
 
-      // Allow UI to paint "Mining..." before blocking on mineBlock
       setTimeout(() => {
         const start = performance.now();
         const latest = blocks[blocks.length - 1];
@@ -50,52 +55,74 @@ export function BlockchainVisualizer() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-zinc-950">
-      <header className="border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+    <div
+      className="flex min-h-screen flex-col"
+      style={{ backgroundColor: "var(--bg-color)", color: "var(--text-primary)" }}
+    >
+      {/* Top bar: Title and Theme toggle */}
+      <header
+        className="flex flex-wrap items-center justify-between gap-4 px-6 py-4"
+        style={{ backgroundColor: "var(--primary-violet)", color: "#ffffff" }}
+      >
+        <h1 className="text-xl font-semibold text-white">
           Blockchain Visualizer
         </h1>
-        <ValidationIndicator isValid={isValid} />
+        <ThemeToggle />
       </header>
 
-      <main className="flex-1 space-y-6 p-6">
-        <section className="flex flex-wrap items-center gap-4">
-          <DifficultySelector
-            value={difficulty}
-            onChange={setDifficulty}
-            disabled={miningStatus === "mining"}
-          />
-          <MiningForm
-            onMine={handleMine}
-            miningStatus={miningStatus}
-            miningTimeMs={miningTimeMs}
-            onResetStatus={() => setMiningStatus("idle")}
-          />
-        </section>
+      <main className="flex flex-1 flex-col items-center px-4 py-6 sm:px-6">
+        <div className="flex w-full max-w-6xl flex-1 flex-col gap-6">
+          {/* Difficulty row */}
+          <section className="flex flex-wrap items-center gap-4">
+            <DifficultySelector
+              value={difficulty}
+              onChange={setDifficulty}
+              disabled={miningStatus === "mining"}
+            />
+          </section>
 
-        <section>
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            Chain
-          </h2>
-          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+          {/* Chain Valid row */}
+          <section className="flex flex-wrap items-center gap-4">
+            <ValidationIndicator isValid={isValid} />
+          </section>
+
+          {/* Prominent input + Mine button */}
+          <section className="flex flex-wrap items-end gap-4">
+            <MiningForm
+              onMine={handleMine}
+              miningStatus={miningStatus}
+              miningTimeMs={miningTimeMs}
+              onResetStatus={() => setMiningStatus("idle")}
+            />
+          </section>
+
+          {/* Horizontal scrolling chain */}
+          <section className="flex-1 overflow-x-auto pb-4">
+            <div className="flex min-h-full items-stretch gap-0">
             {blocks.map((block, i) => (
-              <div key={block.hash} className="flex items-center gap-2">
+              <div key={block.hash} className="flex items-stretch">
                 {i > 0 && (
-                  <span
-                    className="hidden shrink-0 text-zinc-300 dark:text-zinc-600 sm:inline"
+                  <div
+                    className="w-8 shrink-0 self-center"
+                    style={{ backgroundColor: "var(--primary-violet)", height: "4px", minWidth: "32px" }}
                     aria-hidden
-                  >
-                    →
-                  </span>
+                  />
                 )}
                 <BlockCard
                   block={block}
                   previousHash={i > 0 ? blocks[i - 1].hash : null}
+                  isMining={miningStatus === "mining" && i === blocks.length - 1}
+                  isInvalid={!isBlockHashValid(block)}
+                  highlightPreviousHash={hoveredHashBlockIndex === i - 1}
+                  onHashHover={(hovering) =>
+                    setHoveredHashBlockIndex(hovering ? i : null)
+                  }
                 />
               </div>
             ))}
-          </div>
-        </section>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
   );

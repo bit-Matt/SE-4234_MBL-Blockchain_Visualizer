@@ -121,6 +121,11 @@ function calculateHashFromData(block: BlockData): string {
   ).toString();
 }
 
+/** Check if a single block's stored hash matches its recomputed hash (for tamper state UI). */
+export function isBlockHashValid(block: BlockData): boolean {
+  return calculateHashFromData(block) === block.hash;
+}
+
 /** Validate an array of block data (e.g. from React state) without Block instances */
 export function isChainValidFromBlocks(blocks: BlockData[]): boolean {
   if (blocks.length === 0) return true;

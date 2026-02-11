@@ -12,44 +12,73 @@ function truncateHash(h: string): string {
 interface BlockCardProps {
   block: BlockData;
   previousHash: string | null;
+  isMining?: boolean;
+  isInvalid?: boolean;
+  highlightPreviousHash?: boolean;
+  onHashHover?: (hovering: boolean) => void;
 }
 
-export function BlockCard({ block, previousHash }: BlockCardProps) {
+export function BlockCard({
+  block,
+  previousHash,
+  isMining = false,
+  isInvalid = false,
+  highlightPreviousHash = false,
+  onHashHover,
+}: BlockCardProps) {
   const prevHashMatches =
     previousHash === null || block.previousHash === previousHash;
 
   return (
     <article
-      className="w-full min-w-[280px] max-w-sm rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900"
+      className={`w-full min-w-[280px] max-w-sm shrink-0 rounded-2xl border p-4 ${isMining ? "block-card-mining" : ""}`}
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: isInvalid ? "var(--error-red)" : "var(--border-ui)",
+        borderWidth: "1px",
+      }}
       data-block-index={block.index}
     >
-      <div className="mb-3 flex items-center justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-        <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+      <div
+        className="mb-3 flex items-center justify-between border-b pb-2"
+        style={{ borderColor: "var(--border-ui)" }}
+      >
+        <span
+          className="text-sm font-medium"
+          style={{ color: "var(--text-secondary)" }}
+        >
           Block #{block.index}
         </span>
       </div>
 
       <dl className="space-y-2 text-sm">
         <div>
-          <dt className="text-zinc-500 dark:text-zinc-400">Timestamp</dt>
-          <dd className="font-mono text-zinc-900 dark:text-zinc-100">
+          <dt style={{ color: "var(--text-secondary)" }}>Timestamp</dt>
+          <dd
+            className="font-mono"
+            style={{ color: "var(--text-primary)" }}
+          >
             {new Date(block.timestamp).toLocaleString()}
           </dd>
         </div>
         <div>
-          <dt className="text-zinc-500 dark:text-zinc-400">Data</dt>
-          <dd className="break-words font-mono text-zinc-900 dark:text-zinc-100">
+          <dt style={{ color: "var(--text-secondary)" }}>Data</dt>
+          <dd
+            className="break-words font-mono"
+            style={{ color: "var(--text-primary)" }}
+          >
             {block.data}
           </dd>
         </div>
         <div>
-          <dt className="text-zinc-500 dark:text-zinc-400">Previous hash</dt>
+          <dt style={{ color: "var(--text-secondary)" }}>Previous hash</dt>
           <dd
-            className={`font-mono ${
-              prevHashMatches
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-red-600 dark:text-red-400"
-            }`}
+            className={`font-mono hash-link-glow ${highlightPreviousHash ? "highlight" : ""}`}
+            style={{
+              color: prevHashMatches
+                ? "var(--success-green)"
+                : "var(--error-red)",
+            }}
             title={block.previousHash}
           >
             {truncateHash(block.previousHash)}
@@ -57,16 +86,23 @@ export function BlockCard({ block, previousHash }: BlockCardProps) {
           </dd>
         </div>
         <div>
-          <dt className="text-zinc-500 dark:text-zinc-400">Nonce</dt>
-          <dd className="font-mono text-zinc-900 dark:text-zinc-100">
+          <dt style={{ color: "var(--text-secondary)" }}>Nonce</dt>
+          <dd
+            className="font-mono"
+            style={{ color: "var(--text-primary)" }}
+          >
             {block.nonce}
           </dd>
         </div>
         <div>
-          <dt className="text-zinc-500 dark:text-zinc-400">Hash</dt>
+          <dt style={{ color: "var(--text-secondary)" }}>Hash</dt>
           <dd
-            className="font-mono text-zinc-900 dark:text-zinc-100"
+            className="font-mono"
+            style={{ color: "var(--text-primary)" }}
             title={block.hash}
+            onMouseEnter={() => onHashHover?.(true)}
+            onMouseLeave={() => onHashHover?.(false)}
+            role="presentation"
           >
             {truncateHash(block.hash)}
           </dd>
