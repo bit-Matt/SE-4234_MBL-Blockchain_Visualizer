@@ -27,6 +27,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Screenshots
+
+### Desktop View
+<img width="1920" height="920" alt="image" src="https://github.com/user-attachments/assets/f648a76b-6e25-484b-b235-cfb290a72ebd" />
+
+### Mobile View
+<img width="320" alt="image" src="https://github.com/user-attachments/assets/8badf016-84d6-4dbe-9aea-752aceea8669" />
+
 ## Project structure
 
 - `app/` – Next.js App Router (page, layout, global styles)
