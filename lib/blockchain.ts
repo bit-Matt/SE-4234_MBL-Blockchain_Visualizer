@@ -126,6 +126,26 @@ export function isBlockHashValid(block: BlockData): boolean {
   return calculateHashFromData(block) === block.hash;
 }
 
+/** Get validation error message for a block */
+export function getBlockValidationError(
+  block: BlockData,
+  previousBlock: BlockData | null
+): string | null {
+  const computedHash = calculateHashFromData(block);
+  
+  // Check if the block's hash is valid
+  if (computedHash !== block.hash) {
+    return "Block hash does not match computed hash (data was tampered)";
+  }
+  
+  // Check if previousHash links correctly
+  if (previousBlock && block.previousHash !== previousBlock.hash) {
+    return "Previous hash does not match the previous block's hash";
+  }
+  
+  return null;
+}
+
 /** Validate an array of block data (e.g. from React state) without Block instances */
 export function isChainValidFromBlocks(blocks: BlockData[]): boolean {
   if (blocks.length === 0) return true;

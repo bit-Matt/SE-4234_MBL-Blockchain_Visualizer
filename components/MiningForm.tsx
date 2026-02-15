@@ -33,15 +33,15 @@ export function MiningForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-4">
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="block-data"
-          className="text-sm font-medium"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Block data
-        </label>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-1">
+      <label
+        htmlFor="block-data"
+        className="text-sm font-medium"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        Block data
+      </label>
+      <div className="flex flex-wrap items-center gap-3">
         <input
           id="block-data"
           type="text"
@@ -49,42 +49,45 @@ export function MiningForm({
           onChange={(e) => setData(e.target.value)}
           placeholder="e.g. Alice pays Bob 10"
           disabled={miningStatus === "mining"}
-          className="min-w-[240px] rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-violet)] focus:border-[var(--primary-violet)] disabled:opacity-50"
+          className="min-w-0 flex-1 rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-violet)] focus:border-[var(--primary-violet)] disabled:opacity-50"
           style={{
             backgroundColor: "var(--card-bg)",
             color: "var(--text-primary)",
             borderColor: "var(--border-ui)",
           }}
         />
-      </div>
-      <button
-        type="submit"
-        disabled={miningStatus === "mining" || !data.trim()}
-        className="rounded-xl px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-        style={{ backgroundColor: "var(--primary-violet)" }}
-      >
-        {miningStatus === "mining" ? "Mining..." : "Mine Block"}
-      </button>
-      {miningStatus === "mining" && (
-        <span
-          className="flex items-center gap-2 text-sm"
-          style={{ color: "var(--text-secondary)" }}
+        <button
+          type="submit"
+          disabled={miningStatus === "mining" || !data.trim()}
+          className="w-32 shrink-0 rounded-xl px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
+          style={{
+            backgroundColor: "var(--primary-violet)",
+            color: "#ffffff",
+          }}
         >
+          {miningStatus === "mining" ? "Mining..." : "Mine Block"}
+        </button>
+        {miningStatus === "mining" && (
           <span
-            className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-            aria-hidden
-          />
-          Mining...
-        </span>
-      )}
-      {miningStatus === "mined" && miningTimeMs > 0 && (
-        <span
-          className="text-sm"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Mined in {miningTimeMs}ms
-        </span>
-      )}
+            className="flex shrink-0 items-center gap-2 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <span
+              className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+              aria-hidden
+            />
+            Mining...
+          </span>
+        )}
+        {miningStatus === "mined" && miningTimeMs > 0 && (
+          <span
+            className="shrink-0 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Mined in {miningTimeMs}ms
+          </span>
+        )}
+      </div>
     </form>
   );
 }
